@@ -1,41 +1,44 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
-	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type UrlNames struct{
-   Url string `json:"url"`
+
+type Book struct{
+    Title string
+    Author string
 }
 
+func main() {
+    var collection *mongo.Collection
+    ctx := context.TODO()
+    clientOptions := options.Client().ApplyURI("mongodb://localhost:27017/")
+    client, err := mongo.Connect(ctx, clientOptions)
+    if err != nil {
+        log.Println(err)
+    }
+    defer func (){
+        if err = client.Disconnect(ctx);err != nil {
+            log.Panic(err)
+        }
+    }()
+    err = client.Ping(ctx, nil)
+    if err != nil{
+        log.Fatal(err)
+    }
 
-func main(){
-   fmt.Println("Hello from the moon")
-   app := fiber.New()
+    collection = client.Database("NotesPool").Collection("Notes")
+    doc := Book{
+        Title: "Harry Potter",
+        Author: "JK Rowling",
+    }
 
-
-   app.Get("/", func(c *fiber.Ctx) error {
-       return c.SendString("Hello from the moon")
-   })
-
-   app.Post("/api", func(c *fiber.Ctx) error {
-       body := new(UrlNames)
-
-       if err := c.BodyParser(body); err != nil {
-           return err
-       }
-
-       log.Println(body.Url)
-
-       return c.SendStatus(fiber.StatusOK)
-
-   })
-
-
-
-   app.Listen("localhost:3001")
+    result, err := collection.InsertOne(ctx, doc)
+    fmt.Printf("Inserted document with _id: %v \n", result.InsertedID)
 }
-
