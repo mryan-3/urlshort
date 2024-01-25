@@ -47,7 +47,7 @@ func initRouter(){
         log.Println(key)
 
         log.Println(short_url)
-       return c.SendString(body.Url)
+        return c.JSON(fiber.Map{"key": key, "long_url": body.Url, "short_url": short_url})
     })
 
     app.Listen("localhost:3001")
