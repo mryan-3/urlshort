@@ -4,11 +4,12 @@ import (
 	"context"
     "strings"
 	"crypto/sha256"
-	"fmt"
+//	"fmt"
 	"log"
     "encoding/binary"
     "github.com/webermarci/base62"
 	"github.com/gofiber/fiber/v2"
+    "github.com/gofiber/fiber/v2/middleware/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -24,11 +25,12 @@ type Url struct{
     Url string `json:"url"`
 }
 func main(){
-    hashUrl("https://www.youtube.com/watch=?jhhfsaf")
+    initRouter()
 }
 
 func initRouter(){
     app := fiber.New()
+    app.Use(logger.New())
 
     app.Get("/", func(c *fiber.Ctx) error {
         return c.SendString("Hello World Jones")
@@ -41,27 +43,31 @@ func initRouter(){
             c.Status(fiber.StatusBadRequest).SendString(err.Error())
             return err
         }
-       return nil
+        key, short_url := hashUrl(body.Url)
+        log.Println(key)
+
+        log.Println(short_url)
+       return c.SendString(body.Url)
     })
 
     app.Listen("localhost:3001")
 }
 
-func hashUrl(url string){
+func hashUrl(url string)(key string, short string){
     h := sha256.New()
     h.Write([]byte(url))
     bs := h.Sum(nil)
     keyBytes := bs[:8]
-    fmt.Println(keyBytes)
 
     uintBytes := binary.LittleEndian.Uint64(keyBytes)
 
     encoded := base62.Encode(uintBytes)
     encoded = encoded[:6]
-    key := strings.ToLower(encoded)
+    keyLower := strings.ToLower(encoded)
 
-    short_url := "https://ryan/" + key
-    fmt.Println(short_url)
+    shortened := "https://ryan/" + keyLower
+
+    return keyLower, shortened
 }
 
 
