@@ -2,30 +2,29 @@ package main
 
 import (
 	"context"
-    "strings"
 	"crypto/sha256"
-//	"fmt"
+	"fmt"
+	"strings"
+
+	//	"fmt"
+	"encoding/binary"
 	"log"
-    "encoding/binary"
-    "github.com/webermarci/base62"
+
 	"github.com/gofiber/fiber/v2"
-    "github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/webermarci/base62"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 
-type ReturnedUrl struct{
-    Key string `json:"key"`
-    Short_Url string `json:"short_url"`
-    Full_Url string `json:"full_url"`
-}
 
 type Url struct{
     Url string `json:"url"`
 }
 func main(){
-    initRouter()
+    hashUrl("https://codingchallenges.fyi/challenges/challenge-url-shortener/")
+   // redirect("6JhyaShUSll")
 }
 
 func initRouter(){
@@ -43,9 +42,9 @@ func initRouter(){
             c.Status(fiber.StatusBadRequest).SendString(err.Error())
             return err
         }
-        key, short_url := hashUrl(body.Url)
+        keyOriginal, key, short_url := hashUrl(body.Url)
         log.Println(key)
-
+        log.Println(keyOriginal)
         log.Println(short_url)
         return c.JSON(fiber.Map{"key": key, "long_url": body.Url, "short_url": short_url})
     })
@@ -53,24 +52,32 @@ func initRouter(){
     app.Listen("localhost:3001")
 }
 
-func hashUrl(url string)(key string, short string){
+func hashUrl(url string)(keyOriginal string, key string, short string){
     h := sha256.New()
     h.Write([]byte(url))
     bs := h.Sum(nil)
     keyBytes := bs[:8]
-
+    fmt.Println( keyBytes)
     uintBytes := binary.LittleEndian.Uint64(keyBytes)
 
     encoded := base62.Encode(uintBytes)
-    encoded = encoded[:6]
-    keyLower := strings.ToLower(encoded)
+    encodedShort := encoded[:6]
+    keyLower := strings.ToLower(encodedShort)
 
     shortened := "https://ryan/" + keyLower
 
-    return keyLower, shortened
+    return encoded, keyLower, shortened
 }
 
+ func redirect(originalKey  string){
+     decoded, _ := base62.Decode(originalKey)
 
+     keyBytes := make([] byte, 8)
+     binary.LittleEndian.PutUint64(keyBytes, decoded)
+
+     fmt.Printf("%T", keyBytes)
+
+ }
 
 func initDB() {
  //   var collection *mongo.Collection
