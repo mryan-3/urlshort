@@ -24,7 +24,7 @@ type Url struct{
 }
 func main(){
     hashUrl("https://codingchallenges.fyi/challenges/challenge-url-shortener/")
-   // redirect("6JhyaShUSll")
+   // redirect("6JhyaShUSll00")
 }
 
 func initRouter(){
