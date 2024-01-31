@@ -1,4 +1,5 @@
 import React from "react";
+import List from "./List";
 
 
 
@@ -8,7 +9,7 @@ import React from "react";
 
 const Home = () => {
     return (
-        <div className="w-full h-[550px] text-[#e3f6f5]">
+        <div className="w-full h-fit text-[#e3f6f5]">
             <h1 className="text-5xl font-mono font-extrabold text-center py-10">GoTiny</h1>
             <div className="flex justify-center ">
                 <div className="text-xl w-[750px] font-serif  text-center leading-relaxed flex justify-center">
@@ -26,8 +27,8 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-            <div className="absolute h-full w-full bg-[linear-gradient(to_right,#b1b1b12e_1px,transparent_1px),linear-gradient(to_bottom,#b1b1b12e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]">
-        card
+            <div>
+                <List />
             </div>
 
 
