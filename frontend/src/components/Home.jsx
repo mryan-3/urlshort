@@ -17,7 +17,7 @@ const Home = () => {
                     </p>
                 </div>
             </div>
-            <div className="flex justify-center mt-5 p-5">
+            <div className="flex justify-center mt-5 p-4">
                 <div className="flex flex-col p-4 w-[550px] ">
                     <input type="text" placeholder="Enter the URL" className="text-[#272643] h-10 p-4 rounded-md placeholder-black" />
                     <div className="flex justify-center items-center ">
@@ -26,6 +26,9 @@ const Home = () => {
                         </button>
                     </div>
                 </div>
+            </div>
+            <div className="flex justify-center items center pb-3 mb-2">
+                <h2 className="font-bold font-serif text-3xl">Links made by us </h2>
             </div>
             <div>
                 <List />
