@@ -9,6 +9,5 @@ import (
 func main() {
 	database.InitDB()
     routes.InitRouter()
-	// redirect("6JhyaShUSll00")
 }
 
